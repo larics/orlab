@@ -29,6 +29,9 @@ from open_manipulator_msgs.srv import SetJointPosition, SetJointPositionRequest
 
 class ORLAB_OpenManipulator():
     def __init__(self):
+
+        # Define services
+        self.open_manipulator_send_command_service = rospy.ServiceProxy('/open_manipulator/goal_joint_space_path', SetJointPosition)
         
         
         # Variables
@@ -85,6 +88,25 @@ class ORLAB_OpenManipulator():
     def wrap2PI(self, x):
         return (x-2*pi*floor(x/(2*pi)+0.5))
 
+    def moveRobot(self, q, t):
+
+        serviceReq = SetJointPositionRequest()
+
+        print (serviceReq)
+
+        serviceReq.joint_position.joint_name.append('joint1')
+        serviceReq.joint_position.joint_name.append('joint2')
+        serviceReq.joint_position.joint_name.append('joint3')
+        serviceReq.joint_position.joint_name.append('joint4')
+        #serviceReq.joint_position.joint_name.append('gripper')
+        #serviceReq.joint_position.joint_name.append('gripper_sub')
+        serviceReq.joint_position.position = [q[0], q[1], q[2], q[3]]
+
+        serviceReq.path_time = t
+
+        self.open_manipulator_send_command_service.call(serviceReq)
+
+
 if __name__ == '__main__':
 
     rospy.init_node('ROBLAB_open_manipulator')
@@ -96,3 +118,5 @@ if __name__ == '__main__':
     
     sol_ik = node.get_ik(sol_dk)
     #print('IK: ', sol_ik)
+
+    print(node.moveRobot([0, 0, 0, 0], 4.0))
