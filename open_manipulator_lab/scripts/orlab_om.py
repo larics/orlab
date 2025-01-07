@@ -246,9 +246,14 @@ class ORLAB_OpenManipulator():
     def moveRobot(self, q, t):
 
         serviceReq = SetJointPositionRequest()
-
-        print (serviceReq)
-
+        serviceReq.joint_position.joint_name.append('joint1')
+        serviceReq.joint_position.joint_name.append('joint2')
+        serviceReq.joint_position.joint_name.append('joint3')
+        serviceReq.joint_position.joint_name.append('joint4')
+        #serviceReq.joint_position.joint_name.append('gripper')
+        #serviceReq.joint_position.joint_name.append('gripper_sub')
+        
+        '''
         serviceReq.joint_position.joint_name.append('joint1')
         serviceReq.joint_position.joint_name.append('joint2')
         serviceReq.joint_position.joint_name.append('joint3')
@@ -258,6 +263,16 @@ class ORLAB_OpenManipulator():
         serviceReq.path_time = t
 
         self.open_manipulator_send_command_service.call(serviceReq)
+        '''
+        for i in range(0, np.size(q, 0)):
+            
+            serviceReq.joint_position.position = [q[i, 0], q[i, 1], q[i, 2], q[i, 3]]
+
+            serviceReq.path_time = t
+            print (serviceReq)
+
+            self.open_manipulator_send_command_service.call(serviceReq)
+            rospy.sleep(t)
 
 if __name__ == '__main__':
 
